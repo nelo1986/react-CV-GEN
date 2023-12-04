@@ -3,7 +3,8 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import Button from '@mui/material/Button';
+import Rating from '@mui/material/Rating';
+import Typography from '@mui/material/Typography';
 import Accordion from './Accordion';
 import Img from './Img';
 import Contact from './Contact';
@@ -20,7 +21,8 @@ export default function MainGrid() {
     name: '',
     email: '',
     phone: '',
-    address: ''
+    address: '',
+    languages:[]
   })
 
   function addName(name) {
@@ -36,8 +38,16 @@ export default function MainGrid() {
   function addPhone(phone){
     setFormData(prevFormData => ({ ...prevFormData, phone }));
   }
-
-
+  function addLanguage({language, rating}){
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      languages: [
+        ...prevFormData.languages,
+        { language, rating } // Agrega un nuevo objeto al arreglo
+      ]
+    }));
+    console.log(formData)
+  }
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
@@ -48,11 +58,10 @@ export default function MainGrid() {
               onAddEmail={addEmail} 
               onAddPhone={addPhone} 
               onAddAddress={addAddress} 
+              onAddLanguage={addLanguage}
               />
           </Grid>
           <Grid xs={12} md={12}>
-            <Item><Button variant="contained">Submit</Button>
-            </Item>
           </Grid>
         </Grid>
         <Grid xs={12} md={8}>
@@ -70,11 +79,16 @@ export default function MainGrid() {
                 address={formData.address}/>  
               
             </div>
-            <div className="laguagues">Laguages 
-           
+            <div className="lang">Languages
+            {formData.languages.map((lang, key) =>
+              <div key={key}>
+              <Typography component="legend">{lang.language}</Typography>
+              <Rating precision={0.5} name="read-only" value={lang.rating} readOnly />
+              </div>
+          
+            )}
             
             </div>
-            <div className="skills">Skills</div>
             <div className="three"></div>
             <div className="four">Experiencia profesional</div>
             <div className="five">Five</div>

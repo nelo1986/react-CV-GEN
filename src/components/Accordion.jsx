@@ -9,10 +9,12 @@ import FormControl from '@mui/material/FormControl';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import HoverRating from './HoverRating';
+import { Button } from '@mui/material';
+
 export default function ControlledAccordions(props) {
   const [expanded, setExpanded] = React.useState(false);
   const [clicked, setClicked] = React.useState(false);
-  const [rating, setRating] = React.useState('');
+  const [rating, setRating] = React.useState(0);
   const [language, setLanguage] = React.useState('');
 
   const handleChange = (panel) => (event, isExpanded) => {
@@ -43,16 +45,25 @@ export default function ControlledAccordions(props) {
   }
 
   function handleOnClick() {
-    setClicked(true)
-
+    clicked ? setClicked(false) : setClicked(true);
   }
   function getRating(rating) {
     setRating(rating);
     console.log(`Puntuación: ${rating}`)
   }
-  function getLanguage(event) {
+  function handleLanguageChange(event) {
     setLanguage(event.target.value);
-    console.log(language)
+  }
+
+  function handleSubmit(e){
+    e.preventDefault();
+    console.log(language, rating)
+    if (!language.trim()) {
+      console.log('El campo Language es requerido');
+      return; 
+    }
+    props.onAddLanguage({language,rating})
+    setClicked(false)
 
   }
   return (
@@ -123,18 +134,28 @@ export default function ControlledAccordions(props) {
         </AccordionSummary>
         <AccordionDetails>
           {clicked ?
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <TextField id="filled-basic" label="Language" variant="filled" required />
-              <HoverRating getrating={getRating}/>
-              <Fab variant='extended' color="primary" aria-label="add" size='small'>
+            <form onSubmit={handleSubmit}>
+        
+              <div className='wrapperLang'>
+                <div className='languages'>
+                  <TextField onChange={handleLanguageChange} name="language" id="filled-basic" label="Language" variant="outlined" required />
+                  <HoverRating name="rating" getrating={getRating} />
+                </div>
+                <div className='addButton'>
+                  <Button sx={{ height: "4em" }} variant="contained" type="submit">Add</Button>
+                </div>
+                <div className='rating'>
+                </div>
+              </div>
+            </form>
+            :
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }} >
+              <Fab color="primary" aria-label="add" size='small' onClick={handleOnClick}>
                 <AddIcon />
               </Fab>
             </div>
+          }
 
-            :
-            <Fab color="primary" aria-label="add" size='small' onClick={handleOnClick}>
-              <AddIcon />
-            </Fab>}
 
         </AccordionDetails>
       </Accordion>
