@@ -32,6 +32,14 @@ export default function MainGrid() {
   function addPhone(phone) {
     setFormData(prevFormData => ({ ...prevFormData, phone }));
   }
+  function deleteLanguage(languageId) {
+    console.log(languageId)
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      languages: prevFormData.languages.filter(lang => lang.id !== languageId)
+    }));
+  }
+  
   function addLanguage({ id, language, rating }) {
     setFormData(prevFormData => ({
       ...prevFormData,
@@ -53,6 +61,7 @@ export default function MainGrid() {
               onAddAddress={addAddress}
               onAddLanguage={addLanguage}
               languages={formData.languages}
+              onDeleteLanguage={deleteLanguage}
              
             />
           </Grid>

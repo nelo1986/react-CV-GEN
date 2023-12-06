@@ -70,6 +70,7 @@ export default function ControlledAccordions(props) {
     props.onAddLanguage({ id, language, rating })
     setAdded(true)
     setLanguage('')
+    setRating(2)
 
   }
   return (
@@ -144,7 +145,7 @@ export default function ControlledAccordions(props) {
             props.languages.map((lang =>
               <div key={uuidv4()} className='wrapperLang2'>
                 <Lang lang={lang.language} />
-                <ClearIcon />
+                <ClearIcon onClick={() => props.onDeleteLanguage(lang.id)}/>
               </div>
             ))
 
