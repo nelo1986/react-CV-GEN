@@ -10,13 +10,16 @@ import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import HoverRating from './HoverRating';
 import { Button } from '@mui/material';
+import { v4 as uuidv4 } from 'uuid';
+import Lang from './Lang';
+import ClearIcon from '@mui/icons-material/Clear';
 
 export default function ControlledAccordions(props) {
   const [expanded, setExpanded] = React.useState(false);
   const [clicked, setClicked] = React.useState(false);
-  const [rating, setRating] = React.useState(0);
+  const [added, setAdded] = React.useState(false);
+  const [rating, setRating] = React.useState(2);
   const [language, setLanguage] = React.useState('');
-
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
 
@@ -49,21 +52,24 @@ export default function ControlledAccordions(props) {
   }
   function getRating(rating) {
     setRating(rating);
-    console.log(`Puntuación: ${rating}`)
+    //console.log(`Puntuación: ${rating}`)
   }
   function handleLanguageChange(event) {
-    setLanguage(event.target.value);
+    let lang = event.target.value;
+    setLanguage(lang)
   }
 
-  function handleSubmit(e){
+  function handleSubmit(e) {
     e.preventDefault();
-    console.log(language, rating)
+    const id = uuidv4();
     if (!language.trim()) {
       console.log('El campo Language es requerido');
-      return; 
+      return;
     }
-    props.onAddLanguage({language,rating})
-    setClicked(false)
+    // eslint-disable-next-line react/prop-types
+    props.onAddLanguage({ id, language, rating })
+    setAdded(true)
+    setLanguage('')
 
   }
   return (
@@ -133,13 +139,29 @@ export default function ControlledAccordions(props) {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
+          {added &&
+            // eslint-disable-next-line react/prop-types
+            props.languages.map((lang =>
+              <div key={uuidv4()} className='wrapperLang2'>
+                <Lang lang={lang.language} />
+                <ClearIcon />
+              </div>
+            ))
+
+          }
+
           {clicked ?
             <form onSubmit={handleSubmit}>
-        
               <div className='wrapperLang'>
                 <div className='languages'>
-                  <TextField onChange={handleLanguageChange} name="language" id="filled-basic" label="Language" variant="outlined" required />
-                  <HoverRating name="rating" getrating={getRating} />
+                  <TextField onChange={handleLanguageChange}
+                    value={language}
+                    name="language"
+                    id="filled-basic"
+                    label="Language"
+                    variant="outlined"
+                    required />
+                  <HoverRating name="rating" getrating={getRating} rating={rating} />
                 </div>
                 <div className='addButton'>
                   <Button sx={{ height: "4em" }} variant="contained" type="submit">Add</Button>
