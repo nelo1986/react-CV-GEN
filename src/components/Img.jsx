@@ -10,6 +10,6 @@ export default function Img(props){
   };
 
   return (
-    <img src={props.src} style={imgStyle} alt={props.alt || 'Descripción de la imagen'}/>
+    <img src={props.src} style={imgStyle} alt={props.alt || 'I Love you'}/>
   );
 }

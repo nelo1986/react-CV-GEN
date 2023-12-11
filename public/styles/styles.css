@@ -92,6 +92,22 @@
   grid-auto-rows: minmax(100px, auto);
 }
 
+.wrapperExp {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 1px;
+  grid-auto-rows: minmax(100px, auto);
+  align-items: start;
+}
+.companyName {
+  grid-column: 1;
+  grid-row: 1;
+}
+.datePicker{
+  grid-column: 1/3;
+  grid-row: 2;
+
+}
 .languages {
   grid-column: 1/2;
   grid-row: 1;
