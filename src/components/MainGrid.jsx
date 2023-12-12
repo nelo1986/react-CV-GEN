@@ -80,13 +80,30 @@ export default function MainGrid() {
     }));
   }
 
-  function editExperience(experienceId) {
-    console.log(`The experience with ${experienceId} was edited`)
+  function findExpById(experienceId) {
     setMoreExpClicked(true)
     const obj = formData.job_experience.find((exp) => exp.id == experienceId);
-    console.log(obj)
     return obj
   }
+
+  function editExperience({ id, company, position, start, end, description }) {
+    console.log(start, end)
+    setFormData(prevFormData => {
+      // Crear una copia del array job_experience
+      const updatedExperiences = prevFormData.job_experience.map(exp => {
+        if (exp.id === id) {
+          // Actualizar solo el objeto que coincide con el id
+          return { ...exp, company, position, start, end, description };
+        }
+        return exp;
+      });
+  
+      // Establecer el nuevo array como parte del estado
+      return { ...prevFormData, job_experience: updatedExperiences };
+    });
+    console.log(formData)
+  }
+  
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -105,13 +122,14 @@ export default function MainGrid() {
               onAddExperience={addExperience}
               jobexperiences={formData.job_experience}
               onDeleteExperience={deleteExperience}
-              onEditExperience={editExperience}
+              findExpById={findExpById}
               setLangAdded={setAdded}
               langAdded={added}
               expAdded={expAdded}
               setExpAdded={setExpAdded}
               moreExpClicked={moreExpClicked}
               setMoreExpClicked={setMoreExpClicked}
+              editExperience={editExperience}
 
             />
           </Grid>

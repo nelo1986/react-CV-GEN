@@ -18,11 +18,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import EditIcon from '@mui/icons-material/Edit';
-import { NestCamWiredStandSharp } from '@mui/icons-material';
 
 export default function ControlledAccordions(props) {
   const [expanded, setExpanded] = React.useState(false);
   const [moreLangClicked, setMoreLangClicked] = React.useState(false);
+  const [editClicked, setEditClicked] = React.useState(false);
 
   const [rating, setRating] = React.useState(2);
   const [language, setLanguage] = React.useState('');
@@ -38,7 +38,7 @@ export default function ControlledAccordions(props) {
   React.useEffect(() => {
     console.log("formExpData ha cambiado:", formExpData);
   }, [formExpData]);
-  
+
 
 
   const handleChange = (panel) => (event, isExpanded) => {
@@ -73,6 +73,7 @@ export default function ControlledAccordions(props) {
   }
 
   function handleMoreExpOnClick() {
+    // eslint-disable-next-line react/prop-types
     props.moreExpClicked ? props.setMoreExpClicked(false) : props.setMoreExpClicked(true);
 
   }
@@ -93,6 +94,7 @@ export default function ControlledAccordions(props) {
     }
     // eslint-disable-next-line react/prop-types
     props.onAddLanguage({ id, language, rating })
+    // eslint-disable-next-line react/prop-types
     props.setLangAdded(true)
     setLanguage('')
     setRating(2)
@@ -101,10 +103,11 @@ export default function ControlledAccordions(props) {
   function handleExpOnChange(e, datePickerName) {
     let value, name;
     //date picket name solo viene del date picker
-    if (datePickerName){
-      value = e.format('DD-MM-YYYY')
+    if (datePickerName) {
+      console.log(e)
+      value = e.format('YYYY-MM-DD')
       name = datePickerName;
-    }else{
+    } else {
       name = e.target.name;
       value = e.target.value;
     }
@@ -113,19 +116,65 @@ export default function ControlledAccordions(props) {
       ...prevExpValues,
       [name]: value
     })))
-  
+
   }
 
   function handleExpSubmit(e) {
     e.preventDefault();
-    const {id,company, position, start, end, description} = formExpData;
+    const { id, company, position, start, end, description } = formExpData;
     if (!company.trim() || !position.trim() || !start || !end || !description.trim()) {
       console.log('El campo es requerido');
       return;
     }
     //const id =uuidv4();
-        // eslint-disable-next-line react/prop-types
-    props.onAddExperience({id, company, position, start, end, description});
+    // eslint-disable-next-line react/prop-types
+    props.onAddExperience({ id, company, position, start, end, description });
+    e ?? setExpFormData({
+      id: '',
+      company: '',
+      position: '',
+      start: '',
+      end: '',
+      description: ''
+    });
+    // eslint-disable-next-line react/prop-types
+    props.setExpAdded(true)
+    // eslint-disable-next-line react/prop-types
+    props.setMoreExpClicked(false)
+
+  }
+
+  function addDataToFieldsToEdit(id) {
+    // eslint-disable-next-line react/prop-types
+    const newData = props.findExpById(id);
+    setExpFormData(prevExpValues => ({
+      ...prevExpValues,
+      id: newData.id,
+      company: newData.company,
+      position: newData.position,
+      start: dayjs(newData.start),
+      end: dayjs(newData.end),
+      description: newData.description
+    }))
+    setEditClicked(true)
+  }
+
+  function handleExpEdit(e) {
+    //objeto modificado
+    e.preventDefault();
+    console.log(formExpData)
+    let { id, company, position, start, end, description } = formExpData;
+    if (typeof(start)==='object'){
+      start = start.format('YYYY-MM-DD');
+    }
+    if (typeof(end)==='object'){
+      end = end.format('YYYY-MM-DD');
+    }
+    console.log(start, end)
+
+    // eslint-disable-next-line react/prop-types
+
+    props.editExperience({ id, company, position, start, end, description })
     setExpFormData({
       id: '',
       company: '',
@@ -134,22 +183,11 @@ export default function ControlledAccordions(props) {
       end: '',
       description: ''
     });
-    props.setExpAdded(true)
-    props.setMoreExpClicked(false)
-    
-  }
 
-  function addDataToFieldsToEdit(id){
-  const newData = props.onEditExperience(id);
-  setExpFormData(prevExpValues => ({
-    ...prevExpValues,
-    id: newData.id,
-    company: newData.company,
-    position: newData.position,
-    start: dayjs(newData.start),
-    end: dayjs(newData.end), // Modificado para usar newData.end
-    description: newData.description
-  }));
+    setEditClicked(false)
+    // eslint-disable-next-line react/prop-types
+    props.setMoreExpClicked(false)
+
   }
   return (
     <div>
@@ -209,28 +247,43 @@ export default function ControlledAccordions(props) {
               <div key={uuidv4()} className='wrapperLang2'>
                 <p>{experience.company}</p>
                 <div>
-                <ClearIcon onClick={() => props.onDeleteExperience(experience.id)}/>
-                <EditIcon onClick={() => addDataToFieldsToEdit(experience.id)} />
+                  <ClearIcon onClick={() => props.onDeleteExperience(experience.id)} />
+                  <EditIcon onClick={() => addDataToFieldsToEdit(experience.id)} />
                 </div>
               </div>
             ))
 
           }
           {props.moreExpClicked ?
-            <form onSubmit={handleExpSubmit}>
+            <form onSubmit={!editClicked ? handleExpSubmit : handleExpEdit}>
               <div>
                 <TextField value={formExpData.company} name="company" onChange={handleExpOnChange} label="company" variant='outlined' required />
                 <TextField value={formExpData.position} name="position" onChange={handleExpOnChange} label="position" variant='outlined' required />
                 <div className='datePicker'>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker defaultValue={formExpData.start} onChange={(fecha) => handleExpOnChange(fecha, 'start')}
-                    />
-                    <DatePicker defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')}
-                    />
+                    {editClicked ?
+                      <>
+                        <DatePicker value={formExpData.start} defaultValue={formExpData.start} onChange={(fecha) => handleExpOnChange(fecha, 'start')} />
+                        <DatePicker value={formExpData.end} defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
+                      </>
+                      :
+                      <>
+                        <DatePicker defaultValue={formExpData.start} onChange={(fecha) => handleExpOnChange(fecha, 'start')} />
+                        <DatePicker defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')}
+                        />
+                      </>
+                    }
+
                   </LocalizationProvider>
                 </div>
                 <TextField value={formExpData.description} name="description" label="description" onChange={handleExpOnChange} variant='outlined' multiline rows={4} required />
-                <Button variant="text" type='submit'>Add experience</Button>
+                {!editClicked ?
+                  <Button variant="text" type='submit'>Add experience</Button>
+
+                  :
+                  <Button variant="text" type='submit'>Edit experience</Button>
+                }
+
               </div>
             </form>
             :
