@@ -21,6 +21,8 @@ export default function MainGrid() {
     email: '',
     phone: '',
     address: '',
+    profession:'',
+    profile_description: '',
     languages: [],
     job_experience: []
   })
@@ -32,10 +34,15 @@ export default function MainGrid() {
   function loadDemo() {
     setDemo(true)
     setFormData(demoData)
-    console.log('clicl')
   }
   function addName(name) {
     setFormData(prevFormData => ({ ...prevFormData, name }));
+  }
+  function addProfession(profession) {
+    setFormData(prevFormData => ({ ...prevFormData, profession }));
+  }
+  function addProfile(profile_description) {
+    setFormData(prevFormData => ({ ...prevFormData, profile_description }));
   }
   function addEmail(email) {
     setFormData(prevFormData => ({ ...prevFormData, email }));
@@ -87,7 +94,6 @@ export default function MainGrid() {
   }
 
   function editExperience({ id, company, position, start, end, description }) {
-    console.log(start, end)
     setFormData(prevFormData => {
       // Crear una copia del array job_experience
       const updatedExperiences = prevFormData.job_experience.map(exp => {
@@ -97,13 +103,12 @@ export default function MainGrid() {
         }
         return exp;
       });
-  
+
       // Establecer el nuevo array como parte del estado
       return { ...prevFormData, job_experience: updatedExperiences };
     });
-    console.log(formData)
   }
-  
+
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -112,7 +117,10 @@ export default function MainGrid() {
           <Grid xs={12} md={12} >
             <Button onClick={loadDemo}>Load demo</Button>
             <Accordion
+              generalInfo={formData}
               onAdd={addName}
+              onAddProfile={addProfile}
+              onAddProfession={addProfession}
               onAddEmail={addEmail}
               onAddPhone={addPhone}
               onAddAddress={addAddress}
@@ -139,30 +147,31 @@ export default function MainGrid() {
         <Grid xs={12} md={8}>
 
           <div className="wrapper">
-            <div className="photo"><Img src={demo && formData.profile_image} /></div>
+            <div className="photo"><Img src={demo ? formData.profile_image : ""} /></div>
             <div className="name">{formData.name}</div>
-            <div className="nothing">{demo && formData.profession}</div>
+            <div className="nothing">{formData.profession}</div>
             <div className="profile">
-            {demo ? formData.profile_description : ""}
+              {formData.profile_description}
               <div className="contact">
                 <Contact
                   title={formData.title}
                   phone={formData.phone}
                   email={formData.email}
                   address={formData.address}
+
                 />
               </div>
-            
-            <div className="lang">Languages
-              {formData.languages.map((lang) =>
-                <div key={uuidv4()}>
-                  <Typography component="legend">{lang.language}</Typography>
-                  <Rating precision={0.5} name="read-only" value={lang.rating} readOnly />
-                </div>
 
-              )}
+              <div className="lang">Languages
+                {formData.languages.map((lang) =>
+                  <div key={uuidv4()}>
+                    <Typography component="legend">{lang.language}</Typography>
+                    <Rating precision={0.5} name="read-only" value={lang.rating} readOnly />
+                  </div>
 
-            </div>
+                )}
+
+              </div>
             </div>
             <div className="four">Experiencia profesional
               {formData.job_experience.map((experience) =>

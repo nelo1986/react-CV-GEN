@@ -65,6 +65,13 @@ export default function ControlledAccordions(props) {
         // eslint-disable-next-line react/prop-types
         props.onAddAddress(value);
         break;
+      case 'profile_description':
+        // eslint-disable-next-line react/prop-types
+        props.onAddProfile(value);
+        break;
+      case 'profession':
+        // eslint-disable-next-line react/prop-types
+        props.onAddProfession(value);
     }
   }
 
@@ -104,7 +111,6 @@ export default function ControlledAccordions(props) {
     let value, name;
     //date picket name solo viene del date picker
     if (datePickerName) {
-      console.log(e)
       value = e.format('YYYY-MM-DD')
       name = datePickerName;
     } else {
@@ -162,18 +168,14 @@ export default function ControlledAccordions(props) {
   function handleExpEdit(e) {
     //objeto modificado
     e.preventDefault();
-    console.log(formExpData)
     let { id, company, position, start, end, description } = formExpData;
-    if (typeof(start)==='object'){
+    if (typeof (start) === 'object') {
       start = start.format('YYYY-MM-DD');
     }
-    if (typeof(end)==='object'){
+    if (typeof (end) === 'object') {
       end = end.format('YYYY-MM-DD');
     }
-    console.log(start, end)
-
     // eslint-disable-next-line react/prop-types
-
     props.editExperience({ id, company, position, start, end, description })
     setExpFormData({
       id: '',
@@ -207,10 +209,13 @@ export default function ControlledAccordions(props) {
             '& .MuiTextField-root': { m: 1, width: '100%' },
           }} variant="filled" >
 
-            <TextField name="name" id="fullname" label="Full name" variant="outlined" onChange={handleOnChange} />
-            <TextField name="email" id="email" label="Email" variant="outlined" onChange={handleOnChange} />
-            <TextField name="phone" id="phone" label="Phone number" variant="outlined" onChange={handleOnChange} />
-            <TextField name="address" id="adress" label="Adress" variant="outlined" onChange={handleOnChange} />
+            <TextField value={props.generalInfo.name} name="name" id="fullname" label="Full name" variant="outlined" onChange={handleOnChange} />
+            <TextField value={props.generalInfo.email} name="email" id="email" label="Email" variant="outlined" onChange={handleOnChange} />
+            <TextField value={props.generalInfo.phone} name="phone" id="phone" label="Phone number" variant="outlined" onChange={handleOnChange} />
+            <TextField value={props.generalInfo.address} name="address" id="adress" label="Adress" variant="outlined" onChange={handleOnChange} />
+            <TextField value={props.generalInfo.profession} name="profession" id="profession" label="profession" variant="outlined" onChange={handleOnChange} />
+            <TextField value={props.generalInfo.profile_description} name="profile_description" id="profile_description" label="profile" onChange={handleOnChange} variant='outlined' multiline rows={10} />
+
           </FormControl>
 
         </AccordionDetails>
@@ -239,8 +244,6 @@ export default function ControlledAccordions(props) {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          {//EXP}
-          }
           {props.expAdded &&
             // eslint-disable-next-line react/prop-types
             props.jobexperiences.map((experience =>
@@ -252,7 +255,6 @@ export default function ControlledAccordions(props) {
                 </div>
               </div>
             ))
-
           }
           {props.moreExpClicked ?
             <form onSubmit={!editClicked ? handleExpSubmit : handleExpEdit}>
