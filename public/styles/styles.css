@@ -1,10 +1,13 @@
 * {
   box-sizing: border-box;
 }
+body {
 
+}
 .wrapper {
   max-width: 940px;
   margin: 0 auto;
+
 }
 
 .wrapper>div {
@@ -123,22 +126,11 @@
   grid-row: 1;
 }
 
-test {
-  color: #e8e9eb,
+
+ccolor_text_content {
+  color: #737373
 }
 
-test1 {
-  color: #b08b7b
-}
-
-test2 {
-  color: #bdada9
-}
-
-test3 {
-  color: #1f1918
-}
-
-test4 {
-  color: #8a5e3e
+color_title_y_panel {
+  color: #323b4c
 }

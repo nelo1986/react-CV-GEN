@@ -18,6 +18,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import EditIcon from '@mui/icons-material/Edit';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 export default function ControlledAccordions(props) {
   const [expanded, setExpanded] = React.useState(false);
@@ -35,6 +37,11 @@ export default function ControlledAccordions(props) {
     end: '',
     description: ''
   })
+  const [checked, setChecked] = React.useState(false);
+
+  const handleToggle = (event) => {
+    setChecked(event.target.checked);
+  };
   React.useEffect(() => {
     console.log("formExpData ha cambiado:", formExpData);
   }, [formExpData]);
@@ -82,6 +89,7 @@ export default function ControlledAccordions(props) {
   function handleMoreExpOnClick() {
     // eslint-disable-next-line react/prop-types
     props.moreExpClicked ? props.setMoreExpClicked(false) : props.setMoreExpClicked(true);
+    setChecked(false)
 
   }
   function getRating(rating) {
@@ -127,7 +135,8 @@ export default function ControlledAccordions(props) {
 
   function handleExpSubmit(e) {
     e.preventDefault();
-    const { id, company, position, start, end, description } = formExpData;
+    let { id, company, position, start, end, description } = formExpData;
+    if (checked) end = 'currently';
     if (!company.trim() || !position.trim() || !start || !end || !description.trim()) {
       console.log('El campo es requerido');
       return;
@@ -153,6 +162,7 @@ export default function ControlledAccordions(props) {
   function addDataToFieldsToEdit(id) {
     // eslint-disable-next-line react/prop-types
     const newData = props.findExpById(id);
+    newData.end === 'currently' ? setChecked(true) : setChecked(false)
     setExpFormData(prevExpValues => ({
       ...prevExpValues,
       id: newData.id,
@@ -173,8 +183,10 @@ export default function ControlledAccordions(props) {
       start = start.format('YYYY-MM-DD');
     }
     if (typeof (end) === 'object') {
-      end = end.format('YYYY-MM-DD');
+      if (checked) end = "currently"
+      else end = end.format('YYYY-MM-DD');
     }
+    console.log(end)
     // eslint-disable-next-line react/prop-types
     props.editExperience({ id, company, position, start, end, description })
     setExpFormData({
@@ -265,17 +277,35 @@ export default function ControlledAccordions(props) {
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     {editClicked ?
                       <>
-                        <DatePicker value={formExpData.start} defaultValue={formExpData.start} onChange={(fecha) => handleExpOnChange(fecha, 'start')} />
-                        <DatePicker value={formExpData.end} defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
+                        <DatePicker label="start" value={formExpData.start} defaultValue={formExpData.start} onChange={(fecha) => handleExpOnChange(fecha, 'start')} />
+                        {checked ?
+                          <DatePicker disabled label="end" value={formExpData.end} defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
+                          :
+                          <DatePicker label="end" value={formExpData.end} defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
+                        }
+                        <FormControlLabel
+                          value="Currently"
+                          control={<Checkbox checked={checked} onChange={handleToggle} inputProps={{ 'aria-label': 'controlled' }} />}
+                          label="Currently"
+                          labelPlacement="end"
+                        />
                       </>
                       :
                       <>
-                        <DatePicker defaultValue={formExpData.start} onChange={(fecha) => handleExpOnChange(fecha, 'start')} />
-                        <DatePicker defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')}
+                        <DatePicker label="start" defaultValue={formExpData.start} onChange={(fecha) => handleExpOnChange(fecha, 'start')} />
+                        {checked ?
+                          <DatePicker disabled label="end" defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
+                          :
+                          <DatePicker label="end" defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
+                        }
+                        <FormControlLabel
+                          value="Currently"
+                          control={<Checkbox checked={checked} onChange={handleToggle} inputProps={{ 'aria-label': 'controlled' }} />}
+                          label="Currently"
+                          labelPlacement="end"
                         />
                       </>
                     }
-
                   </LocalizationProvider>
                 </div>
                 <TextField value={formExpData.description} name="description" label="description" onChange={handleExpOnChange} variant='outlined' multiline rows={4} required />
