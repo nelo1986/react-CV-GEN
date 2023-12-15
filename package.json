@@ -12,8 +12,12 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@fontsource-variable/roboto-slab": "^5.0.18",
+    "@fontsource/lato": "^5.0.18",
+    "@fontsource/merriweather": "^5.0.8",
     "@mui/icons-material": "^5.14.19",
-    "@mui/material": "^5.14.19",
+    "@mui/lab": "^5.0.0-alpha.156",
+    "@mui/material": "^5.15.0",
     "@mui/x-date-pickers": "^6.18.3",
     "dayjs": "^1.11.10",
     "ramda": "^0.29.1",

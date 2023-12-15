@@ -1,8 +1,12 @@
 * {
+  font-family: "Lato";
+}
+
+/* * {
   box-sizing: border-box;
 }
 body {
-
+  font-family: 'Lato', sans-serif;
 }
 .wrapper {
   max-width: 940px;
@@ -133,4 +137,4 @@ ccolor_text_content {
 
 color_title_y_panel {
   color: #323b4c
-}
+} */

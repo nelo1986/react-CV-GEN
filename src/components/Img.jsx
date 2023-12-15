@@ -1,13 +1,13 @@
 export default function Img(props){
   const imgStyle = {
-    maxWidth: '100%', // La imagen puede ser hasta el 100% del ancho del contenedor
-    maxHeight: '100vh', // La imagen puede ser hasta el 100% de la altura de la ventana gráfica
-    width: 'auto', // La anchura se ajusta automáticamente para mantener la relación de aspecto
-    height: 'auto', // La altura se ajusta automáticamente para mantener la relación de aspecto
-    display: 'block', // Esto evita que la imagen tenga espacio extra debajo
-    objectFit: 'contain', // La imagen se ajustará dentro del contenedor sin cortarse
-    margin: 'auto' // Centra la imagen dentro del contenedor si es más pequeña que el contenedor
+    width: '250px', // Un tamaño fijo para el ancho
+    height: '250px', // Un tamaño fijo para el alto, igual al ancho para hacerlo cuadrado
+    display: 'block',
+    objectFit: 'cover', // Esto asegura que la imagen cubra completamente el área, pero podría recortarla
+    margin: 'auto',
+    borderRadius: '50%' // Esto hará que el cuadrado parezca un círculo
   };
+  
 
   return (
     <img src={props.src} style={imgStyle} alt={props.alt || 'I Love you'}/>

@@ -9,7 +9,7 @@ import FormControl from '@mui/material/FormControl';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import HoverRating from './HoverRating';
-import { Button } from '@mui/material';
+import { Button, Box, Grid } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
 import Lang from './Lang';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -20,6 +20,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import EditIcon from '@mui/icons-material/Edit';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
 
 export default function ControlledAccordions(props) {
   const [expanded, setExpanded] = React.useState(false);
@@ -50,6 +52,8 @@ export default function ControlledAccordions(props) {
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+    props.setMoreExpClicked(false)
+    setMoreLangClicked(false)
 
   };
   function handleOnChange(e) {
@@ -85,12 +89,10 @@ export default function ControlledAccordions(props) {
   function handleMoreLangOnClick() {
     moreLangClicked ? setMoreLangClicked(false) : setMoreLangClicked(true);
   }
-
   function handleMoreExpOnClick() {
     // eslint-disable-next-line react/prop-types
     props.moreExpClicked ? props.setMoreExpClicked(false) : props.setMoreExpClicked(true);
     setChecked(false)
-
   }
   function getRating(rating) {
     setRating(rating);
@@ -99,7 +101,6 @@ export default function ControlledAccordions(props) {
     let lang = event.target.value;
     setLanguage(lang)
   }
-
   function handleLangSubmit(e) {
     e.preventDefault();
     const id = uuidv4();
@@ -119,7 +120,7 @@ export default function ControlledAccordions(props) {
     let value, name;
     //date picket name solo viene del date picker
     if (datePickerName) {
-      value = e.format('YYYY-MM-DD')
+      value = e.format('YYYY/MM/DD')
       name = datePickerName;
     } else {
       name = e.target.name;
@@ -180,11 +181,11 @@ export default function ControlledAccordions(props) {
     e.preventDefault();
     let { id, company, position, start, end, description } = formExpData;
     if (typeof (start) === 'object') {
-      start = start.format('YYYY-MM-DD');
+      start = start.format('YYYY/MM/DD');
     }
     if (typeof (end) === 'object') {
       if (checked) end = "currently"
-      else end = end.format('YYYY-MM-DD');
+      else end = end.format('YYYY/MM/DD');
     }
     console.log(end)
     // eslint-disable-next-line react/prop-types
@@ -203,6 +204,12 @@ export default function ControlledAccordions(props) {
     props.setMoreExpClicked(false)
 
   }
+
+  const accordionTitleStyle = {
+    fontFamily: 'merriweather',
+    width: '100%',
+    flexShrink: 0
+  }
   return (
     <div>
       <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
@@ -211,47 +218,50 @@ export default function ControlledAccordions(props) {
           aria-controls="panel1bh-content"
           id="panel1bh-header"
         >
-          <Typography sx={{ width: '100%', flexShrink: 0 }}>
+          <Typography sx={accordionTitleStyle}>
             General information
           </Typography>
-
         </AccordionSummary>
         <AccordionDetails>
           <FormControl fullWidth sx={{
-            '& .MuiTextField-root': { m: 1, width: '100%' },
+            '& .MuiTextField-root': { m: 1, width: '100%' }, paddingRight: 2
           }} variant="filled" >
-
             <TextField value={props.generalInfo.name} name="name" id="fullname" label="Full name" variant="outlined" onChange={handleOnChange} />
             <TextField value={props.generalInfo.email} name="email" id="email" label="Email" variant="outlined" onChange={handleOnChange} />
             <TextField value={props.generalInfo.phone} name="phone" id="phone" label="Phone number" variant="outlined" onChange={handleOnChange} />
             <TextField value={props.generalInfo.address} name="address" id="adress" label="Adress" variant="outlined" onChange={handleOnChange} />
             <TextField value={props.generalInfo.profession} name="profession" id="profession" label="profession" variant="outlined" onChange={handleOnChange} />
             <TextField value={props.generalInfo.profile_description} name="profile_description" id="profile_description" label="profile" onChange={handleOnChange} variant='outlined' multiline rows={10} />
-
           </FormControl>
-
         </AccordionDetails>
       </Accordion>
+
+
       <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel2bh-content"
           id="panel2bh-header"
         >
-          <Typography sx={{ width: '100%', flexShrink: 0 }}>Educational experience</Typography>
+          <Typography sx={accordionTitleStyle}>Education</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <TextField id="standard-basic" label="Standard" variant="standard" />
+
+
 
         </AccordionDetails>
       </Accordion>
+
+
+
+
       <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel3bh-content"
           id="panel3bh-header"
         >
-          <Typography sx={{ width: '100%', flexShrink: 0 }}>
+          <Typography sx={accordionTitleStyle}>
             Practical experience
           </Typography>
         </AccordionSummary>
@@ -259,63 +269,86 @@ export default function ControlledAccordions(props) {
           {props.expAdded &&
             // eslint-disable-next-line react/prop-types
             props.jobexperiences.map((experience =>
-              <div key={uuidv4()} className='wrapperLang2'>
-                <p>{experience.company}</p>
-                <div>
-                  <ClearIcon onClick={() => props.onDeleteExperience(experience.id)} />
-                  <EditIcon onClick={() => addDataToFieldsToEdit(experience.id)} />
-                </div>
-              </div>
+              <Box key={experience.id} className='wrapperLang2'>
+                <Grid container alignItems="center" spacing={1}>
+                  <Grid item xs>
+                    <Typography fontFamily={'lato'}>{experience.company}</Typography>
+
+                  </Grid>
+                  <Grid item style={{ marginLeft: 'auto', paddingRight: 20, paddingBottom: 8 }}>
+                    <Tooltip title="Delete">
+                      <IconButton>
+                        <ClearIcon onClick={() => props.onDeleteExperience(experience.id)} style={{ cursor: 'pointer', marginRight: 2 }} />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Edit">
+                      <IconButton>
+                        <EditIcon onClick={() => addDataToFieldsToEdit(experience.id)} style={{ cursor: 'pointer' }} />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+                </Grid>
+              </Box>
             ))
           }
           {props.moreExpClicked ?
             <form onSubmit={!editClicked ? handleExpSubmit : handleExpEdit}>
               <div>
-                <TextField value={formExpData.company} name="company" onChange={handleExpOnChange} label="company" variant='outlined' required />
-                <TextField value={formExpData.position} name="position" onChange={handleExpOnChange} label="position" variant='outlined' required />
-                <div className='datePicker'>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    {editClicked ?
-                      <>
-                        <DatePicker label="start" value={formExpData.start} defaultValue={formExpData.start} onChange={(fecha) => handleExpOnChange(fecha, 'start')} />
-                        {checked ?
-                          <DatePicker disabled label="end" value={formExpData.end} defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
-                          :
-                          <DatePicker label="end" value={formExpData.end} defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
-                        }
-                        <FormControlLabel
-                          value="Currently"
-                          control={<Checkbox checked={checked} onChange={handleToggle} inputProps={{ 'aria-label': 'controlled' }} />}
-                          label="Currently"
-                          labelPlacement="end"
-                        />
-                      </>
-                      :
-                      <>
-                        <DatePicker label="start" defaultValue={formExpData.start} onChange={(fecha) => handleExpOnChange(fecha, 'start')} />
-                        {checked ?
-                          <DatePicker disabled label="end" defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
-                          :
-                          <DatePicker label="end" defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
-                        }
-                        <FormControlLabel
-                          value="Currently"
-                          control={<Checkbox checked={checked} onChange={handleToggle} inputProps={{ 'aria-label': 'controlled' }} />}
-                          label="Currently"
-                          labelPlacement="end"
-                        />
-                      </>
-                    }
-                  </LocalizationProvider>
-                </div>
-                <TextField value={formExpData.description} name="description" label="description" onChange={handleExpOnChange} variant='outlined' multiline rows={4} required />
-                {!editClicked ?
-                  <Button variant="text" type='submit'>Add experience</Button>
+                <FormControl fullWidth sx={{
+                  '& .MuiTextField-root': { m: 1, width: '100%' }, paddingRight: 2, paddingTop: 2
+                }} variant="filled" >
 
-                  :
-                  <Button variant="text" type='submit'>Edit experience</Button>
-                }
+                  <TextField value={formExpData.company} name="company" onChange={handleExpOnChange} label="company name" variant='outlined' required />
+                  <TextField value={formExpData.position} name="position" onChange={handleExpOnChange} label="position" variant='outlined' required />
+                  <div className='datePicker'>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      {editClicked ?
+                        <>
+                          <DatePicker label="start" value={formExpData.start} defaultValue={formExpData.start} onChange={(fecha) => handleExpOnChange(fecha, 'start')} />
+                          {checked ?
+                            <DatePicker disabled label="end" value={formExpData.end} defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
+                            :
+                            <DatePicker label="end" value={formExpData.end} defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
+                          }
+                          <FormControlLabel
+                            value="Currently"
+                            control={<Checkbox checked={checked} onChange={handleToggle} inputProps={{ 'aria-label': 'controlled' }} />}
+                            label="Currently"
+                            labelPlacement="end"
+                          />
+                        </>
+                        :
+                        <>
+                          <DatePicker label="start" defaultValue={formExpData.start} onChange={(fecha) => handleExpOnChange(fecha, 'start')} />
+                          {checked ?
+                            <DatePicker disabled label="end" defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
+                            :
+                            <DatePicker label="end" defaultValue={formExpData.end} onChange={(fecha) => handleExpOnChange(fecha, 'end')} />
+                          }
+                          <Box paddingLeft={1}>
+                            <FormControlLabel
+                              value="Currently"
+                              control={<Checkbox checked={checked} onChange={handleToggle} inputProps={{ 'aria-label': 'controlled' }} />}
+                              label="Currently working"
+                              labelPlacement="end"
+                              style={{ marginVertical: 0, alignItems: 'center' }} // Ajusta el estilo aquí si es necesario
+                            />
+                          </Box>
 
+                        </>
+                      }
+                    </LocalizationProvider>
+
+                  </div>
+                  <TextField value={formExpData.description} name="description" label="description" onChange={handleExpOnChange} variant='outlined' multiline rows={4} required />
+                  {!editClicked ?
+                    <Button variant="text" type='submit'>Add experience</Button>
+
+                    :
+                    <Button variant="text" type='submit'>Edit experience</Button>
+                  }
+                </FormControl>
               </div>
             </form>
             :
@@ -335,7 +368,7 @@ export default function ControlledAccordions(props) {
           aria-controls="panel4bh-content"
           id="panel4bh-header"
         >
-          <Typography sx={{ width: '100%', flexShrink: 0 }}>
+          <Typography sx={accordionTitleStyle}>
             Languages
           </Typography>
         </AccordionSummary>
@@ -345,7 +378,7 @@ export default function ControlledAccordions(props) {
             props.languages.map((lang =>
               <div key={uuidv4()} className='wrapperLang2'>
                 <Lang lang={lang.language} />
-                <ClearIcon onClick={() => props.onDeleteLanguage(lang.id)} />
+                <ClearIcon onClick={() => props.onDeleteLanguage(lang.id)} style={{ cursor: 'pointer' }} />
               </div>
             ))
 
@@ -377,6 +410,17 @@ export default function ControlledAccordions(props) {
               </Fab>
             </div>
           }
+        </AccordionDetails>
+      </Accordion>
+      <Accordion expanded={expanded === 'panel5'} onChange={handleChange('panel5')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel5bh-content"
+          id="panel5bh-header"
+        >
+          <Typography sx={accordionTitleStyle}>Skills</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
         </AccordionDetails>
       </Accordion>
 
