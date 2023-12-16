@@ -18,6 +18,8 @@ import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
+import Paper from '@mui/material/Paper';
+
 
 
 export default function MainGrid() {
@@ -151,9 +153,13 @@ export default function MainGrid() {
   return (
     <Box sx={{ flexGrow: 1 }} padding={2}>
       <CssBaseline />
-      <Grid container spacing={1}>
+      <Grid container spacing={3}>
         <Grid xs={12} sm={12} md={4} xl={3} sx={{ backgroundColor: '#F6F6F6' }}>
-          <Grid container spacing={2} justifyContent='center' padding={1}>
+         
+          <Paper elevation={6} sx={{textAlign:'center', paddingTop:2, paddingBottom:2}}>CV-GEN</Paper>
+
+          <Grid container spacing={2} justifyContent='center' padding={2}>
+          
             <Grid item>
               <Button variant="contained" onClick={loadDemo}>Load demo data</Button>
             </Grid>
@@ -185,9 +191,9 @@ export default function MainGrid() {
             editExperience={editExperience}
           />
         </Grid>
-        <Grid xs={12} sm={12} md={3} xl={3} sx={{ backgroundColor: '#323b4c', color: 'white' }}>
+        <Grid xs={12} sm={10} md={3} xl={3} sx={{ backgroundColor: '#323b4c', color: 'white' }}>
           <Box padding={2}>
-            <Box padding={1} width={240}>
+            <Box padding={1} width={'100%'}>
               <Img src={demo ? formData.profile_image : ""} />
             </Box>
             <Box paddingY={2}>
