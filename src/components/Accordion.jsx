@@ -22,14 +22,22 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import Select from '@mui/material/Select';
 export default function ControlledAccordions(props) {
   const [expanded, setExpanded] = React.useState(false);
   const [moreLangClicked, setMoreLangClicked] = React.useState(false);
   const [editClicked, setEditClicked] = React.useState(false);
-
   const [rating, setRating] = React.useState(2);
   const [language, setLanguage] = React.useState('');
+  const [skill, setSkill] = React.useState('');
+  const [hability, setHability] = React.useState('');
+
+  const handleHabilityChange = (event) => {
+    setHability(event.target.value);
+  };
 
   const [formExpData, setExpFormData] = React.useState({
     id: '',
@@ -56,6 +64,8 @@ export default function ControlledAccordions(props) {
     setMoreLangClicked(false)
 
   };
+
+
   function handleOnChange(e) {
     // eslint-disable-next-line react/prop-types
     const { name, value } = e.target;
@@ -94,6 +104,32 @@ export default function ControlledAccordions(props) {
     props.moreExpClicked ? props.setMoreExpClicked(false) : props.setMoreExpClicked(true);
     setChecked(false)
   }
+
+  function handleMoreSkillOnClick() {
+    // eslint-disable-next-line react/prop-types
+    props.moreSkillClicked ? props.setMoreSkillClicked(false) : props.setMoreSkillClicked(true);
+    setChecked(false)
+  }
+
+  function handleSkillChange(event) {
+    let skill = event.target.value;
+    setSkill(skill);
+  }
+
+  function handleSkillSubmit(e) {
+    e.preventDefault();
+    const id = uuidv4();
+    if (!skill.trim()) {
+      console.log('El campo Skill es requerido');
+      return;
+    }
+    // eslint-disable-next-line react/prop-types
+    props.addSkill({ id, skill, hability })
+    // eslint-disable-next-line 
+    console.log(id,skill, hability)
+    setSkill('')
+
+  }
   function getRating(rating) {
     setRating(rating);
   }
@@ -101,6 +137,7 @@ export default function ControlledAccordions(props) {
     let lang = event.target.value;
     setLanguage(lang)
   }
+
   function handleLangSubmit(e) {
     e.preventDefault();
     const id = uuidv4();
@@ -115,6 +152,8 @@ export default function ControlledAccordions(props) {
     setLanguage('')
     setRating(2)
   }
+
+
 
   function handleExpOnChange(e, datePickerName) {
     let value, name;
@@ -159,6 +198,8 @@ export default function ControlledAccordions(props) {
     props.setMoreExpClicked(false)
 
   }
+
+
 
   function addDataToFieldsToEdit(id) {
     // eslint-disable-next-line react/prop-types
@@ -269,7 +310,7 @@ export default function ControlledAccordions(props) {
           {props.expAdded &&
             // eslint-disable-next-line react/prop-types
             props.jobexperiences.map((experience =>
-              <Box key={experience.id} className='wrapperLang2'>
+              <Box key={experience.id}>
                 <Grid container alignItems="center" spacing={1}>
                   <Grid item xs>
                     <Typography fontFamily={'lato'}>{experience.company}</Typography>
@@ -361,8 +402,6 @@ export default function ControlledAccordions(props) {
         </AccordionDetails>
       </Accordion>
       <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
-        {//LANG}
-        }
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel4bh-content"
@@ -376,7 +415,7 @@ export default function ControlledAccordions(props) {
           {props.langAdded &&
             // eslint-disable-next-line react/prop-types
             props.languages.map((lang =>
-              <div key={uuidv4()} className='wrapperLang2'>
+              <div key={uuidv4()}>
                 <Lang lang={lang.language} />
                 <ClearIcon onClick={() => props.onDeleteLanguage(lang.id)} style={{ cursor: 'pointer' }} />
               </div>
@@ -421,6 +460,57 @@ export default function ControlledAccordions(props) {
           <Typography sx={accordionTitleStyle}>Skills</Typography>
         </AccordionSummary>
         <AccordionDetails>
+          {props.skillAdded &&
+            // eslint-disable-next-line react/prop-types
+            props.generalInfo.skills.map((skill =>
+              <Box key={uuidv4()}>
+                {skill.skill}
+                <ClearIcon onClick={() => props.deleteSkill(skill.id)} style={{ cursor: 'pointer' }} />
+
+              </Box>
+            ))
+          }
+          {props.moreSkillClicked ?
+            <form onSubmit={handleSkillSubmit}>
+              <Box>
+                <Box>
+                  <TextField onChange={handleSkillChange}
+                    value={skill}
+                    name="skill"
+                    id="filled-basic"
+                    label="Skill"
+                    variant="outlined"
+                    required />
+                  <InputLabel id="demo-simple-select-required-label">Hability</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-required-label"
+                    id="demo-simple-select-required"
+                    value={hability}
+                    label="Hability *"
+                    onChange={handleHabilityChange}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    <MenuItem value={1}>1</MenuItem>
+                    <MenuItem value={2}>2</MenuItem>
+                    <MenuItem value={3}>3</MenuItem>
+                    <MenuItem value={4}>4</MenuItem>
+                    <MenuItem value={5}>5</MenuItem>
+                  </Select>
+                  <FormHelperText>Required</FormHelperText>
+
+                </Box>
+                <Button sx={{ height: "4em" }} variant="text" type="submit">Add</Button>
+              </Box>
+            </form>
+            :
+            <Box style={{ display: "flex", justifyContent: "center", alignItems: "center" }} >
+              <Fab color="primary" aria-label="add" size='small' onClick={handleMoreSkillOnClick}>
+                <AddIcon />
+              </Fab>
+            </Box>
+          }
         </AccordionDetails>
       </Accordion>
 

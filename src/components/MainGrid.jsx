@@ -19,14 +19,11 @@ import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import Paper from '@mui/material/Paper';
-
-
+import Slider from '@mui/material/Slider';
 
 export default function MainGrid() {
 
   const [demo, setDemo] = React.useState(false);
-
-
   const [formData, setFormData] = React.useState(demo ? demoData : {
     name: '',
     email: '',
@@ -35,11 +32,42 @@ export default function MainGrid() {
     profession: '',
     profile_description: '',
     languages: [],
-    job_experience: []
+    job_experience: [],
+    skills: []
   })
   const [added, setAdded] = React.useState(demoData ? true : false);
   const [expAdded, setExpAdded] = React.useState(demoData ? true : false);
+
+
   const [moreExpClicked, setMoreExpClicked] = React.useState(false);
+
+  const [moreSkillClicked, setMoreSkillClicked] = React.useState(false);
+  const [skillAdded, setSkillAdded] = React.useState(demoData ? true : false);
+
+
+
+  const textStyle = {
+    color: '#737373',
+    fontFamily: 'lato',
+    variant: 'body1'
+  }
+
+  const LefPaneltextStyle = {
+    color: 'white',
+    fontFamily: 'lato',
+    variant: 'body1'
+  }
+  const leftPanelTitleStyle = {
+    color: 'white',
+    fontFamily: 'merriweather',
+    fontWeight: 'bold',
+    letterSpacing: '.1rem'
+  }
+  const hrStyle = {
+    marginLeft: 'auto',
+    borderBottom: '1px solid white',
+    width: '100%'
+  }
 
   function clearData() {
     setFormData({
@@ -92,6 +120,23 @@ export default function MainGrid() {
     }));
   }
 
+  function addSkill({ id, skill, hability }) {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      skills: [
+        ...prevFormData.skills,
+        { id, skill, hability }
+      ]
+    }));
+  }
+
+  function deleteSkill(skillId) {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      skills: prevFormData.skills.filter(skill => skill.id !== skillId)
+    }));
+  }
+
   function addExperience({ id, company, position, start, end, description }) {
     setFormData(prevFormData => ({
       ...prevFormData,
@@ -131,40 +176,20 @@ export default function MainGrid() {
     });
   }
 
-  const textStyle = {
-    color: '#737373',
-    fontFamily: 'lato',
-    variant: 'body1'
-  }
-  const leftPanelTitleStyle = {
-    color: 'white',
-    fontFamily: 'merriweather',
-    fontWeight: 'bold',
-    letterSpacing: '.1rem'
-  }
-
-  const hrStyle = {
-    marginLeft: 'auto',
-    borderBottom: '1px solid white',
-    width: '100%'
-  }
-
-
   return (
     <Box sx={{ flexGrow: 1 }} padding={2}>
       <CssBaseline />
       <Grid container spacing={3}>
         <Grid xs={12} sm={12} md={4} xl={3} sx={{ backgroundColor: '#F6F6F6' }}>
-         
-          <Paper elevation={6} sx={{textAlign:'center', paddingTop:2, paddingBottom:2}}>CV-GEN</Paper>
+          <Paper elevation={6} sx={{ textAlign: 'center', paddingTop: 2, paddingBottom: 2, fontFamily: 'merriweather' }}>Resume builder</Paper>
 
           <Grid container spacing={2} justifyContent='center' padding={2}>
-          
+
             <Grid item>
-              <Button variant="contained" onClick={loadDemo}>Load demo data</Button>
+              <Button sx={{ fontFamily: 'lato' }} variant="contained" onClick={loadDemo}>Load demo data</Button>
             </Grid>
             <Grid item>
-              <Button padding={1} variant="contained" color='error' onClick={clearData}>Clear all data</Button>
+              <Button sx={{ fontFamily: 'lato' }} padding={1} variant="contained" color='error' onClick={clearData}>Clear all data</Button>
             </Grid>
           </Grid>
           <Accordion
@@ -184,11 +209,20 @@ export default function MainGrid() {
             findExpById={findExpById}
             setLangAdded={setAdded}
             langAdded={added}
+
             expAdded={expAdded}
             setExpAdded={setExpAdded}
             moreExpClicked={moreExpClicked}
             setMoreExpClicked={setMoreExpClicked}
+
             editExperience={editExperience}
+
+            moreSkillClicked={moreSkillClicked}
+            setMoreSkillClicked={setMoreSkillClicked}
+            skillAdded={skillAdded}
+            setSkillAdded={setSkillAdded}
+            addSkill={addSkill}
+            deleteSkill={deleteSkill}
           />
         </Grid>
         <Grid xs={12} sm={10} md={3} xl={3} sx={{ backgroundColor: '#323b4c', color: 'white' }}>
@@ -206,17 +240,39 @@ export default function MainGrid() {
                 address={formData.address}
               />
             </Box>
+            <Box paddingY={2}>
+              <Typography sx={leftPanelTitleStyle} variant='h5'>Languages</Typography>
+              <hr style={hrStyle}></hr>
+              {formData.languages.map((lang) =>
+                <Box key={uuidv4()} paddingY={1} paddingBottom={1}>
+                  <Typography sx={LefPaneltextStyle}> {lang.language}</Typography>
+                  <Rating precision={0.5} name="read-only" value={lang.rating} emptyIcon={<StarIcon style={{ opacity: 0.23, color: 'white' }} fontSize="inherit" />}
+                    readOnly />
+                </Box>
 
-            <Typography sx={leftPanelTitleStyle} variant='h5'>Languages</Typography>
-            <hr style={hrStyle}></hr>
-            {formData.languages.map((lang) =>
-              <Box key={uuidv4()} paddingY={1}>
-                <Typography component="legend">{lang.language}</Typography>
-                <Rating precision={0.5} name="read-only" value={lang.rating} emptyIcon={<StarIcon style={{ opacity: 0.23, color: 'white' }} fontSize="inherit" />}
-                  readOnly />
-              </Box>
+              )}
+            </Box>
+            <Box paddingY={2}>
 
-            )}
+              <Typography sx={leftPanelTitleStyle} variant='h5'>Skills</Typography>
+              <hr style={hrStyle}></hr>
+              {formData.skills.map((skill) =>
+                <Box key={uuidv4()} paddingY={1}>
+                  <Typography sx={LefPaneltextStyle} component="legend">{skill.skill}</Typography>
+                  <Slider
+                    disabled={false}
+                    marks
+                    max={5}
+                    min={0}
+                    defaultValue={2}
+                    aria-label="Default" valueLabelDisplay="auto"
+                    value={skill.hability}
+
+                  />
+                </Box>
+
+              )}
+            </Box>
           </Box>
         </Grid>
         <Grid xs={12} sm={12} md={5} xl={6} sx={{ color: '#737373' }}>

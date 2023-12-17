@@ -43,6 +43,20 @@ const demoData = {
       end: '2023/06/01',
       description: 'In this role, John collaborates closely with key figures in the wizarding world, including Harry Potter and associates, to manage and care for magical creatures. His responsibilities include developing strategies to ensure the peaceful coexistence of magical and non-magical communities and advising on matters related to the protection of magical creatures from dark forces, including those led by Voldemort.'
     }
+  ],
+  skills:[
+    {
+      id: '900',
+      skill:'Stare while smiling',
+      hability:5
+    },
+    {
+      id: '9100',
+      skill:'Sing',
+      hability:3
+    }
+
+
   ]
 }
 
