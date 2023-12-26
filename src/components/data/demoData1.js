@@ -61,8 +61,8 @@ const demoData = {
     id: '9008',
     start_year: '2021',
     end_year: '2022',
-    degree_and_field: 'Degree on IT',
-    center: 'Hardvard'
+    degree_and_field: 'Bachelor in Computer Science and Engineering',
+    center: 'Harvard'
 
     }
 
