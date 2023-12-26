@@ -2,29 +2,21 @@ import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
-import Rating from '@mui/material/Rating';
-import Typography from '@mui/material/Typography';
 import Accordion from './Accordion';
-import Img from './Img';
-import Contact from './Contact';
-import { v4 as uuidv4 } from 'uuid';
-import Experience from './Experience';
-import demoData from './data/demoData.js'
+import demoData from './data/demoData1.js'
 import { Button } from '@mui/material';
-import StarIcon from '@mui/icons-material/Star';
-import Timeline from '@mui/lab/Timeline';
-import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineDot from '@mui/lab/TimelineDot';
 import Paper from '@mui/material/Paper';
-import Slider from '@mui/material/Slider';
+import Cv from './Cv.jsx';
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas"
+import Container from '@mui/material/Container';
 
 export default function MainGrid() {
 
+
   const [demo, setDemo] = React.useState(false);
   const [formData, setFormData] = React.useState(demo ? demoData : {
+    profile_image: '',
     name: '',
     email: '',
     phone: '',
@@ -33,44 +25,21 @@ export default function MainGrid() {
     profile_description: '',
     languages: [],
     job_experience: [],
-    skills: []
+    skills: [],
+    education: []
   })
-  const [added, setAdded] = React.useState(demoData ? true : false);
+  const [langAdded, setLangAdded] = React.useState(demoData ? true : false);
   const [expAdded, setExpAdded] = React.useState(demoData ? true : false);
-
-
   const [moreExpClicked, setMoreExpClicked] = React.useState(false);
-
+  const [moreLangClicked, setMoreLangClicked] = React.useState(false);
   const [moreSkillClicked, setMoreSkillClicked] = React.useState(false);
   const [skillAdded, setSkillAdded] = React.useState(demoData ? true : false);
-
-
-
-  const textStyle = {
-    color: '#737373',
-    fontFamily: 'lato',
-    variant: 'body1'
-  }
-
-  const LefPaneltextStyle = {
-    color: 'white',
-    fontFamily: 'lato',
-    variant: 'body1'
-  }
-  const leftPanelTitleStyle = {
-    color: 'white',
-    fontFamily: 'merriweather',
-    fontWeight: 'bold',
-    letterSpacing: '.1rem'
-  }
-  const hrStyle = {
-    marginLeft: 'auto',
-    borderBottom: '1px solid white',
-    width: '100%'
-  }
+  const [moreEdClicked, setMoreEdClicked] = React.useState(false);
+  const [educationAdded, setEducationAdded] = React.useState(demoData ? true : false);
 
   function clearData() {
     setFormData({
+      profile_image: '',
       name: '',
       email: '',
       phone: '',
@@ -78,7 +47,9 @@ export default function MainGrid() {
       profession: '',
       profile_description: '',
       languages: [],
-      job_experience: []
+      job_experience: [],
+      skills: [],
+      education: []
     })
   }
   function loadDemo() {
@@ -119,6 +90,32 @@ export default function MainGrid() {
       ]
     }));
   }
+
+  function addEducation({ id, start_year, end_year, degree_and_field, center }) {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      education: [
+        ...prevFormData.education,
+        { id, start_year, end_year, degree_and_field, center }
+      ]
+    }));
+    console.log(formData)
+  }
+
+  function deleteEducation(educationId) {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      education: prevFormData.education.filter(ed => ed.id !== educationId)
+    }));
+  }
+
+  function addPicture(src) {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      profile_image: src
+    }));
+  }
+
 
   function addSkill({ id, skill, hability }) {
     setFormData(prevFormData => ({
@@ -162,159 +159,96 @@ export default function MainGrid() {
 
   function editExperience({ id, company, position, start, end, description }) {
     setFormData(prevFormData => {
-      // Crear una copia del array job_experience
       const updatedExperiences = prevFormData.job_experience.map(exp => {
         if (exp.id === id) {
-          // Actualizar solo el objeto que coincide con el id
           return { ...exp, company, position, start, end, description };
         }
         return exp;
       });
-
-      // Establecer el nuevo array como parte del estado
       return { ...prevFormData, job_experience: updatedExperiences };
     });
   }
 
+
+
+  function downloadPdfDocument() {
+    const input = document.getElementById('lolo')
+    html2canvas(input, {
+      width: input.scrollWidth,
+      height: input.scrollHeight,
+      scale: 1 // Ajusta esto según sea necesario
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF();
+      pdf.addImage(imgData, 'PNG', 0, 0);
+      pdf.save('download.pdf');
+    });
+  }
   return (
-    <Box sx={{ flexGrow: 1 }} padding={2}>
-      <CssBaseline />
-      <Grid container spacing={3}>
-        <Grid xs={12} sm={12} md={4} xl={3} sx={{ backgroundColor: '#F6F6F6' }}>
-          <Paper elevation={6} sx={{ textAlign: 'center', paddingTop: 2, paddingBottom: 2, fontFamily: 'merriweather' }}>Resume builder</Paper>
-
-          <Grid container spacing={2} justifyContent='center' padding={2}>
-
-            <Grid item>
-              <Button sx={{ fontFamily: 'lato' }} variant="contained" onClick={loadDemo}>Load demo data</Button>
+    <Container maxWidth="xl">
+      <Box sx={{ flexGrow: 1 }} padding={1} alignContent={'center'}>
+        <CssBaseline />
+        <Grid container spacing={1}>
+          <Grid xs={12} sm={12} md={4} xl={3}>
+            <Paper elevation={6} sx={{ textAlign: 'center', paddingTop: 2, paddingBottom: 2, fontFamily: 'merriweather' }}>Resume builder</Paper>
+            <Grid container spacing={2} justifyContent='center' padding={2}>
+              <Grid item>
+                <Button sx={{ fontFamily: 'lato' }} variant="contained" onClick={loadDemo}>Load demo data</Button>
+              </Grid>
+              <Grid item>
+                <Button sx={{ fontFamily: 'lato' }} padding={1} variant="contained" color='error' onClick={clearData}>Clear all data</Button>
+              </Grid>
             </Grid>
-            <Grid item>
-              <Button sx={{ fontFamily: 'lato' }} padding={1} variant="contained" color='error' onClick={clearData}>Clear all data</Button>
-            </Grid>
+            <Accordion
+              generalInfo={formData}
+              onAdd={addName}
+              onAddProfile={addProfile}
+              onAddProfession={addProfession}
+              onAddEmail={addEmail}
+              onAddPhone={addPhone}
+              onAddAddress={addAddress}
+              onAddLanguage={addLanguage}
+              languages={formData.languages}
+              onDeleteLanguage={deleteLanguage}
+              onAddExperience={addExperience}
+              jobexperiences={formData.job_experience}
+              onDeleteExperience={deleteExperience}
+              findExpById={findExpById}
+              setLangAdded={setLangAdded}
+              langAdded={langAdded}
+              expAdded={expAdded}
+              setExpAdded={setExpAdded}
+              moreExpClicked={moreExpClicked}
+              setMoreExpClicked={setMoreExpClicked}
+              moreLangClicked={moreLangClicked}
+              setMoreLangClicked={setMoreLangClicked}
+              editExperience={editExperience}
+              moreSkillClicked={moreSkillClicked}
+              setMoreSkillClicked={setMoreSkillClicked}
+              skillAdded={skillAdded}
+              setSkillAdded={setSkillAdded}
+              addSkill={addSkill}
+              deleteSkill={deleteSkill}
+              addPicture={addPicture}
+
+              educationAdded={educationAdded}
+              setEducationAdded={setEducationAdded}
+              moreEdClicked={moreEdClicked}
+              setMoreEdClicked={setMoreEdClicked}
+              deleteEducation={deleteEducation}
+              addEducation={addEducation}
+
+
+            />
           </Grid>
-          <Accordion
-            generalInfo={formData}
-            onAdd={addName}
-            onAddProfile={addProfile}
-            onAddProfession={addProfession}
-            onAddEmail={addEmail}
-            onAddPhone={addPhone}
-            onAddAddress={addAddress}
-            onAddLanguage={addLanguage}
-            languages={formData.languages}
-            onDeleteLanguage={deleteLanguage}
-            onAddExperience={addExperience}
-            jobexperiences={formData.job_experience}
-            onDeleteExperience={deleteExperience}
-            findExpById={findExpById}
-            setLangAdded={setAdded}
-            langAdded={added}
 
-            expAdded={expAdded}
-            setExpAdded={setExpAdded}
-            moreExpClicked={moreExpClicked}
-            setMoreExpClicked={setMoreExpClicked}
+          <Cv formData={formData} />
+          {/* <Button onClick={downloadPdfDocument}>download</Button> */}
 
-            editExperience={editExperience}
-
-            moreSkillClicked={moreSkillClicked}
-            setMoreSkillClicked={setMoreSkillClicked}
-            skillAdded={skillAdded}
-            setSkillAdded={setSkillAdded}
-            addSkill={addSkill}
-            deleteSkill={deleteSkill}
-          />
         </Grid>
-        <Grid xs={12} sm={10} md={3} xl={3} sx={{ backgroundColor: '#323b4c', color: 'white' }}>
-          <Box padding={2}>
-            <Box padding={1} width={'100%'}>
-              <Img src={demo ? formData.profile_image : ""} />
-            </Box>
-            <Box paddingY={2}>
-              <Typography variant='h5' sx={leftPanelTitleStyle}>Contact</Typography>
-              <hr style={hrStyle}></hr>
-              <Contact
-                title={formData.title}
-                phone={formData.phone}
-                email={formData.email}
-                address={formData.address}
-              />
-            </Box>
-            <Box paddingY={2}>
-              <Typography sx={leftPanelTitleStyle} variant='h5'>Languages</Typography>
-              <hr style={hrStyle}></hr>
-              {formData.languages.map((lang) =>
-                <Box key={uuidv4()} paddingY={1} paddingBottom={1}>
-                  <Typography sx={LefPaneltextStyle}> {lang.language}</Typography>
-                  <Rating precision={0.5} name="read-only" value={lang.rating} emptyIcon={<StarIcon style={{ opacity: 0.23, color: 'white' }} fontSize="inherit" />}
-                    readOnly />
-                </Box>
 
-              )}
-            </Box>
-            <Box paddingY={2}>
 
-              <Typography sx={leftPanelTitleStyle} variant='h5'>Skills</Typography>
-              <hr style={hrStyle}></hr>
-              {formData.skills.map((skill) =>
-                <Box key={uuidv4()} paddingY={1}>
-                  <Typography sx={LefPaneltextStyle} component="legend">{skill.skill}</Typography>
-                  <Slider
-                    disabled={false}
-                    marks
-                    max={5}
-                    min={0}
-                    defaultValue={2}
-                    aria-label="Default" valueLabelDisplay="auto"
-                    value={skill.hability}
-
-                  />
-                </Box>
-
-              )}
-            </Box>
-          </Box>
-        </Grid>
-        <Grid xs={12} sm={12} md={5} xl={6} sx={{ color: '#737373' }}>
-          <Box paddingX={3}>
-            <Typography letterSpacing={'.2rem'} color={'#323b4c'} variant='h3' fontFamily={'merriweather'}>{formData.name}</Typography>
-            <Typography letterSpacing={'.2rem'} color={'#323b4c'} variant='h6' fontFamily={'merriweather'}>{formData.profession}</Typography>
-            <Typography paddingY={2} style={textStyle}> {formData.profile_description}</Typography>
-          </Box>
-          <Box paddingX={3} paddingBottom={1} paddingTop={1}>
-            <Typography sx={{ fontWeight: 'bold' }} letterSpacing={'.2rem'} color={'#323b4c'} variant='h5' fontFamily={'merriweather'}>Experience</Typography>
-            <hr color='#323b4c'></hr>
-          </Box>
-
-          {formData.job_experience.map((experience) =>
-            <Timeline
-              sx={{
-                [`& .${timelineItemClasses.root}:before`]: {
-                  flex: 0,
-                  padding: 0,
-                },
-              }}
-              key={uuidv4()}
-            >
-              <TimelineItem>
-                <TimelineSeparator >
-                  <TimelineDot />
-                  <TimelineConnector />
-                </TimelineSeparator>
-                <TimelineContent>
-                  <Experience
-                    company={experience.company}
-                    position={experience.position}
-                    start={experience.start}
-                    end={experience.end}
-                    description={experience.description}
-                  />
-                </TimelineContent>
-              </TimelineItem>
-            </Timeline>
-          )}
-        </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </Container>
   );
 }

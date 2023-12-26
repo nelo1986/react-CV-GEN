@@ -1,6 +1,7 @@
 const demoData = {
-  profile_image:'/images/john_doe.jpeg',
-  profile_description:"John Doe is the quintessential geeky charmer with a knack for the extraordinary. Fluent in Elvish and Parseltongue, he's often found debating whether a lightsaber could beat a wand in a duel.",
+  profile_image: '/images/john_doe.jpeg',
+  //profile_image: '/images/profile-circle.png',
+  profile_description: "John Doe is the quintessential geeky charmer with a knack for the extraordinary. Fluent in Elvish and Parseltongue, he's often found debating whether a lightsaber could beat a wand in a duel.",
   name: 'John Doe',
   profession: 'Multiverse Cultural Ambassador & Part-Time Wizard',
   email: 'john.doe@example.com',
@@ -15,7 +16,7 @@ const demoData = {
     {
       id: 2,
       language: 'Parseltongue',
-      rating: 2.5
+      rating: 2
     }
   ],
   job_experience: [
@@ -44,19 +45,17 @@ const demoData = {
       description: 'In this role, John collaborates closely with key figures in the wizarding world, including Harry Potter and associates, to manage and care for magical creatures. His responsibilities include developing strategies to ensure the peaceful coexistence of magical and non-magical communities and advising on matters related to the protection of magical creatures from dark forces, including those led by Voldemort.'
     }
   ],
-  skills:[
+  skills: [
     {
       id: '900',
-      skill:'Stare while smiling',
-      hability:5
+      skill: 'Stare while smiling',
+      hability: 5
     },
     {
       id: '9100',
-      skill:'Sing',
-      hability:3
+      skill: 'Sing',
+      hability: 3
     }
-
-
   ]
 }
 
